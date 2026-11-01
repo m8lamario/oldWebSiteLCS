@@ -20,6 +20,10 @@ export interface LocalCompetition {
   image?: string;
   imageAlt?: string;
   description?: string;
+  /** Coordinate della città di riferimento: senza, la competizione non compare sulla mappa. */
+  coordinates?: { lat: number; lon: number };
+  /** Posizione del logo rispetto alla città, in unità della mappa (`ITALY_MAP`). */
+  mapCallout?: { dx: number; dy: number };
 }
 
 export interface ContactChannel {
@@ -141,6 +145,158 @@ export const MISSION_PILLARS = [
   },
 ] as const;
 
+export const SCHOOL_INVITE = {
+  id: "scuole",
+  concept: "Porta la tua scuola in campo",
+  titleLines: ["La prossima squadra", "potrebbe essere", "la tua"] as const,
+  statement:
+    "La tua scuola ha una squadra? Oppure vuoi crearne una? Entra nel circuito Lega Calcio Studenti e porta il tuo istituto a competere con le altre scuole. Scopri le competizioni disponibili e diventa protagonista della prossima stagione.",
+  ctaLabel: "Candida la tua scuola",
+  ctaHref: "https://registration.legacalciostudenti.com/",
+  closer: "Un'unica lega. Tante città. La tua scuola.",
+} as const;
+
+export interface CircuitStat {
+  id: string;
+  value: string;
+  label: string;
+  note?: string;
+}
+
+/**
+ * Solo cifre verificabili in produzione. Valori sotto contrassegnati come test
+ * servono a verificare il layout; sostituirli prima della pubblicazione.
+ */
+export const CIRCUIT_STATS: CircuitStat[] = [
+  {
+    id: "schools",
+    value: "120+",
+    label: "Scuole partecipanti",
+    note: "Anteprima layout · dato di test",
+  },
+  {
+    id: "students",
+    value: "2.400+",
+    label: "Studenti coinvolti",
+    note: "Anteprima layout · dato di test",
+  },
+  {
+    id: "cities",
+    value: "6",
+    label: "Città del circuito",
+    note: "Coppe con sede territoriale pubblicata",
+  },
+  {
+    id: "competitions",
+    value: "6",
+    label: "Competizioni organizzate",
+    note: "Elenco competizioni locali + Colosseo Cup",
+  },
+  {
+    id: "matches",
+    value: "180+",
+    label: "Partite disputate",
+    note: "Anteprima layout · dato di test",
+  },
+];
+
+export const PARTNER_KINDS = [
+  "istituzionale",
+  "sponsor",
+  "media",
+  "tecnico",
+] as const;
+
+export type PartnerKind = (typeof PARTNER_KINDS)[number];
+
+export const PARTNER_KIND_LABELS: Record<PartnerKind, string> = {
+  istituzionale: "Partner istituzionali",
+  sponsor: "Sponsor",
+  media: "Media partner",
+  tecnico: "Collaborazioni tecniche",
+};
+
+export interface CircuitPartner {
+  id: string;
+  name: string;
+  kind: PartnerKind;
+  logo?: string;
+  href?: string;
+}
+
+/**
+ * Collaborazioni reali in produzione. Voci di test per anteprima UI — rimuovere o
+ * sostituire prima del go-live. `logo` in /public, `href` facoltativo.
+ */
+export const CIRCUIT_PARTNERS: CircuitPartner[] = [
+  {
+    id: "lcs-identity",
+    name: "Lega Calcio Studenti",
+    kind: "istituzionale",
+    logo: "/logoCities/lcsw.png",
+    href: "/#mission",
+  },
+  {
+    id: "partner-gold-test",
+    name: "Partner gold (test)",
+    kind: "sponsor",
+    logo: "/logoCities/molecup.png",
+  },
+  {
+    id: "partner-silver-test",
+    name: "Partner silver (test)",
+    kind: "sponsor",
+    logo: "/logoCities/leonessacup.png",
+  },
+  {
+    id: "media-test",
+    name: "Redazione LCS (test)",
+    kind: "media",
+  },
+  {
+    id: "registration-platform",
+    name: "Registrazione scuole",
+    kind: "tecnico",
+    href: "https://registration.legacalciostudenti.com/",
+  },
+];
+
+export const NATIONAL_FINALS = {
+  id: "finali",
+  href: "/finali-nazionali",
+  eyebrow: "Un solo circuito",
+  titleLead: "Verso le",
+  titleScript: "finali nazionali",
+  lead: "Le coppe cittadine di Lega Calcio Studenti non sono tornei isolati. Appartengono a un'unica lega: ogni istituto costruisce la propria stagione nella competizione del territorio, con l'orizzonte delle finali nazionali.",
+  steps: [
+    {
+      index: "01",
+      title: "Competizioni territoriali",
+      text: "Ogni coppa resta legata alla propria città e alla propria identità, dentro lo stesso circuito.",
+    },
+    {
+      index: "02",
+      title: "Il percorso delle squadre",
+      text: "La stagione si gioca nelle competizioni locali. È lì che una scuola misura il proprio cammino.",
+    },
+    {
+      index: "03",
+      title: "L'appuntamento nazionale",
+      text: "Le finali riuniscono gli istituti che conquistano sul campo la qualificazione.",
+    },
+  ],
+  ctaLabel: "Le finali nazionali",
+  pageEyebrow: "Lega Calcio Studenti",
+  pageTitleLead: "Finali",
+  pageTitleScript: "nazionali",
+  pageLead:
+    "Le competizioni territoriali sono tappe di un progetto più ampio. Le finali nazionali sono l'appuntamento in cui il circuito si ritrova, oltre la singola città.",
+  pageMeaning:
+    "Per le scuole partecipanti, arrivare alle finali significa portare l'istituto oltre il proprio territorio e misurarsi con le altre realtà della lega.",
+  unpublishedNote:
+    "Format, criteri di qualificazione, date e regolamento non sono ancora pubblicati: compariranno su questa pagina quando saranno definiti.",
+} as const;
+
 /** Recapiti ufficiali. Vuoto finché non sono presenti nel progetto. */
 export const CONTACT_CHANNELS: ContactChannel[] = [];
 
@@ -155,6 +311,8 @@ export const LOCAL_COMPETITIONS: LocalCompetition[] = [
     logo: "/logoCities/molecup.png",
     image: "/backgroundCities/molecup.jpg",
     imageAlt: "Atmosfera della Mole Cup a Torino",
+    coordinates: { lat: 45.0703, lon: 7.6869 },
+    mapCallout: { dx: -150, dy: 10 },
   },
   {
     id: "leonessa-cup",
@@ -166,6 +324,8 @@ export const LOCAL_COMPETITIONS: LocalCompetition[] = [
     logo: "/logoCities/leonessacup.png",
     image: "/backgroundCities/leonessacup.jpg",
     imageAlt: "Atmosfera della Leonessa Cup a Brescia",
+    coordinates: { lat: 45.5416, lon: 10.2118 },
+    mapCallout: { dx: 95, dy: -175 },
   },
   {
     id: "ferrea-cup",
@@ -177,6 +337,8 @@ export const LOCAL_COMPETITIONS: LocalCompetition[] = [
     logo: "/logoCities/ferreacup.png",
     image: "/backgroundCities/ferreacup.jpg",
     imageAlt: "Atmosfera della Ferrea Cup a Monza",
+    coordinates: { lat: 45.5845, lon: 9.2744 },
+    mapCallout: { dx: -95, dy: -175 },
   },
   {
     id: "olympius-cup",
@@ -188,6 +350,8 @@ export const LOCAL_COMPETITIONS: LocalCompetition[] = [
     logo: "/logoCities/olympiuscup.png",
     image: "/backgroundCities/olympiuscup.jpg",
     imageAlt: "Atmosfera della Olympius Cup a Modena",
+    coordinates: { lat: 44.6471, lon: 10.9252 },
+    mapCallout: { dx: 190, dy: 5 },
   },
   {
     id: "turas-cup",
@@ -199,11 +363,20 @@ export const LOCAL_COMPETITIONS: LocalCompetition[] = [
     logo: "/logoCities/turascup.png",
     image: "/backgroundCities/turascup.jpg",
     imageAlt: "Atmosfera della Turàs Cup a Cremona",
+    coordinates: { lat: 45.1335, lon: 10.0222 },
+    mapCallout: { dx: -125, dy: 175 },
   },
   {
     id: "colosseo-cup",
     slug: "colosseo-cup",
     name: "Colosseo Cup",
+    city: "Roma",
+    regionTag: "Lazio",
+    stageLabel: "Fase a Gironi",
+    logo: "/logoCities/lcsw.png",
+    imageAlt: "Atmosfera della Colosseo Cup a Roma",
+    coordinates: { lat: 41.9028, lon: 12.4964 },
+    mapCallout: { dx: -155, dy: 165 },
   },
 ];
 

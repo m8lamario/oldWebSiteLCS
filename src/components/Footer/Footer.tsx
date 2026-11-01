@@ -10,6 +10,7 @@ import styles from "./Footer.module.css";
 
 const FOOTER_LINKS = [
   { label: "Mission", href: "/#mission" },
+  { label: "Finali nazionali", href: "/finali-nazionali" },
   { label: "News", href: "/#news" },
   { label: "Contatti", href: "/contatti" },
 ];
